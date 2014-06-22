@@ -1,0 +1,105 @@
+Practicle Machine Learning Writeup Assignment
+========================================================
+
+### Brief Introduction to this report.
+
+There are devices such as *Jawbone Up, Nike FuelBand, and Fitbit* with which we can now possible to collect a large amount of data about personal activity relatively inexpensively.
+In this report my goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants and predict the manner in which 6 participants did the exercise. This report also contains how I built my model, how I used cross validation and what I think the expected out of sample error is. At the end of this report there is a prediction for 20 different test cases.
+
+Data for this report can be found in reference section.
+
+#### Loading required library
+```{r library, echo=TRUE,results='hide',warning=FALSE}
+library(RANN)
+library(caret)
+```
+
+#### Loading Data(Test and Train data)
+```{r data, echo=TRUE, warning=FALSE}
+pml.train <- read.csv("pml-training.csv")
+pml.test <- read.csv("pml-testing.csv")
+```
+#### Data Prepration
+
+splitting trainig dataset into train and test with a ratio of 7/3 of 10.
+
+```{r}
+set.seed(1234)
+trainingIndex <- createDataPartition(pml.train$classe, list=FALSE, p=.7)
+train = pml.train[trainingIndex,]
+test = pml.train[-trainingIndex,]
+```
+Filter the numeric features and outcome. 
+```{r}
+num_idx = which(lapply(train,class) %in% c('numeric')  )
+```
+Fixing the  missing values. This includes the imputation method usin K-nearest neighbour model.
+
+```{r}
+preModel <- preProcess(train[,num_idx], method=c('knnImpute'))
+ptraining <- cbind(train$classe, predict(preModel, train[,num_idx]))
+ptesting <- cbind(test$classe, predict(preModel, test[,num_idx]))
+```
+Rename first Label to classe
+
+```{r}
+names(ptraining)[1] <- 'classe'
+names(ptesting)[1] <- 'classe'
+```
+
+Make test set for submission
+
+```{r}
+prtesting <- predict(preModel, pml.test[,num_idx])
+```
+### Modeling with Random Forest Model
+
+```{r, warning=FALSE}
+library(randomForest)
+rf_model  <- randomForest(classe ~ ., ptraining)
+```
+
+### In-sample accuracy
+```{r}
+training_pred <- predict(rf_model, ptraining) 
+print(confusionMatrix(training_pred, ptraining$classe))
+```
+The in-sample accuracy is 100%.
+
+### Out-of-sample accuracy
+```{r}
+testing_pred <- predict(rf_model, ptesting) 
+```
+
+Confusion Matrix: 
+```{r}
+print(confusionMatrix(testing_pred, ptesting$classe))
+```
+
+The cross validation accuracy is  98.6%, which should be sufficient for predicting the 20 test observations.
+
+### Test Set Prediction Results
+
+Applying model to the test data.
+```{r}
+answers <- predict(rf_model, prtesting) 
+answers
+```
+
+Writing outputs to 20 files.
+
+```{r}
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+pml_write_files(answers)
+```
+
+## References
+[1] http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises  
+[2] https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv  
+[3] https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
