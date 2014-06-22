@@ -46,7 +46,7 @@ Filter the numeric features and outcome.
 num_idx = which(lapply(train, class) %in% c("numeric"))
 ```
 
-Fixing the  missing values. This includes the imputation method usin K-nearest neighbour model.
+Fixing the  missing values. This includes the imputation method using K-nearest neighbour model.
 
 
 ```r
@@ -85,6 +85,109 @@ library(randomForest)
 
 ```r
 rf_model <- randomForest(classe ~ ., ptraining)
+plot(rf_model)
+```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+
+### Important Variables for above applied model
+in this list variables with higher value are more important for above model
+
+
+```r
+varImp(rf_model)
+```
+
+```
+##                          Overall
+## roll_belt                 906.65
+## pitch_belt                457.50
+## yaw_belt                  675.07
+## max_roll_belt              88.91
+## min_roll_belt              91.78
+## amplitude_roll_belt       117.49
+## var_total_accel_belt      123.07
+## avg_roll_belt              88.25
+## stddev_roll_belt          113.19
+## var_roll_belt             142.48
+## avg_pitch_belt            108.03
+## stddev_pitch_belt          67.76
+## var_pitch_belt             66.21
+## avg_yaw_belt               98.76
+## stddev_yaw_belt           106.05
+## var_yaw_belt              118.49
+## gyros_belt_x               84.08
+## gyros_belt_y               87.50
+## gyros_belt_z              192.36
+## roll_arm                  153.52
+## pitch_arm                  86.70
+## yaw_arm                   147.05
+## var_accel_arm             129.15
+## avg_roll_arm              102.43
+## stddev_roll_arm            51.58
+## var_roll_arm               59.09
+## avg_pitch_arm              58.28
+## stddev_pitch_arm           54.04
+## var_pitch_arm              45.91
+## avg_yaw_arm                58.03
+## stddev_yaw_arm             60.70
+## var_yaw_arm                59.61
+## gyros_arm_x                83.00
+## gyros_arm_y                94.77
+## gyros_arm_z                46.88
+## max_roll_arm               61.62
+## max_picth_arm              60.75
+## min_roll_arm              102.83
+## min_pitch_arm              66.00
+## amplitude_roll_arm         55.72
+## amplitude_pitch_arm        59.44
+## roll_dumbbell             307.93
+## pitch_dumbbell            156.74
+## yaw_dumbbell              195.76
+## max_roll_dumbbell          85.94
+## max_picth_dumbbell         81.55
+## min_roll_dumbbell          89.20
+## min_pitch_dumbbell         69.74
+## amplitude_roll_dumbbell    53.44
+## amplitude_pitch_dumbbell   62.70
+## var_accel_dumbbell        140.98
+## avg_roll_dumbbell         172.86
+## stddev_roll_dumbbell       59.64
+## var_roll_dumbbell          64.30
+## avg_pitch_dumbbell         96.43
+## stddev_pitch_dumbbell      54.53
+## var_pitch_dumbbell         63.47
+## avg_yaw_dumbbell           72.72
+## stddev_yaw_dumbbell        61.74
+## var_yaw_dumbbell           57.68
+## gyros_dumbbell_x          107.11
+## gyros_dumbbell_y          213.89
+## gyros_dumbbell_z           69.37
+## magnet_dumbbell_z         465.90
+## roll_forearm              347.75
+## pitch_forearm             309.58
+## yaw_forearm               110.43
+## max_roll_forearm          159.79
+## max_picth_forearm          62.31
+## min_roll_forearm          206.92
+## min_pitch_forearm          56.97
+## amplitude_roll_forearm     53.08
+## amplitude_pitch_forearm    45.54
+## var_accel_forearm         115.57
+## avg_roll_forearm           65.05
+## stddev_roll_forearm        59.33
+## var_roll_forearm           67.56
+## avg_pitch_forearm         174.27
+## stddev_pitch_forearm       51.60
+## var_pitch_forearm          47.87
+## avg_yaw_forearm            78.21
+## stddev_yaw_forearm         38.43
+## var_yaw_forearm            45.89
+## gyros_forearm_x            61.46
+## gyros_forearm_y            95.59
+## gyros_forearm_z            68.64
+## magnet_forearm_y          131.11
+## magnet_forearm_z          169.64
 ```
 
 
@@ -138,7 +241,7 @@ testing_pred <- predict(rf_model, ptesting)
 ```
 
 
-Confusion Matrix: 
+Confusion Matrix for train dataset: 
 
 ```r
 print(confusionMatrix(testing_pred, ptesting$classe))

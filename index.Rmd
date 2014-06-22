@@ -33,7 +33,7 @@ Filter the numeric features and outcome.
 ```{r}
 num_idx = which(lapply(train,class) %in% c('numeric')  )
 ```
-Fixing the  missing values. This includes the imputation method usin K-nearest neighbour model.
+Fixing the  missing values. This includes the imputation method using K-nearest neighbour model.
 
 ```{r}
 preModel <- preProcess(train[,num_idx], method=c('knnImpute'))
@@ -57,7 +57,14 @@ prtesting <- predict(preModel, pml.test[,num_idx])
 ```{r, warning=FALSE}
 library(randomForest)
 rf_model  <- randomForest(classe ~ ., ptraining)
+plot(rf_model)
 ```
+### Important Variables for above applied model
+in this list variables with higher value are more important for above model
+
+```{r, warning=FALSE}
+varImp(rf_model)
+``` 
 
 ### In-sample accuracy
 ```{r}
@@ -71,7 +78,7 @@ The in-sample accuracy is 100%.
 testing_pred <- predict(rf_model, ptesting) 
 ```
 
-Confusion Matrix: 
+Confusion Matrix for train dataset: 
 ```{r}
 print(confusionMatrix(testing_pred, ptesting$classe))
 ```
